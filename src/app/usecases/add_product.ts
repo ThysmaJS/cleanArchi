@@ -5,7 +5,18 @@ import { ProductWriter } from '../../domain/ports/products/writer'
 export class AddProduct {
   constructor(private writer: ProductWriter) {}
 
-  async exec(_p: Product): Promise<void> {
-    throw new Error('TODO Etape 2: AddProduct.exec')
+  async exec(p: Product): Promise<void> {
+    // Validation: id et name non vides
+if (!p.id || !p.name) {
+      throw new Error('invalid_product')
+    }
+    
+    // Validation: stock >= 0
+    if (p.stock < 0) {
+      throw new Error('invalid_stock')
+    }
+    
+    // Sauvegarde via le port
+    await this.writer.save(p)
   }
 }

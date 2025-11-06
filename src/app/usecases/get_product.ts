@@ -5,7 +5,7 @@ import { ProductReader } from '../../domain/ports/products/reader'
 export class GetProduct {
   constructor(private reader: ProductReader) {}
 
-  async exec(_id: string): Promise<Product | null> {
-    throw new Error('TODO Etape 2: GetProduct.exec')
+  async exec(id: string): Promise<Product | null> {
+    return await this.reader.getById(id)
   }
 }
