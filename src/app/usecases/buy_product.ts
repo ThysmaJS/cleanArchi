@@ -6,7 +6,23 @@ import { ProductWriter } from '../../domain/ports/products/writer'
 export class BuyProduct {
   constructor(private reader: ProductReader, private writer: ProductWriter) {}
 
-  async exec(_id: string, _qty: number): Promise<Product> {
-    throw new Error('TODO Etape 3: BuyProduct.exec')
+  async exec(id: string, qty: number): Promise<Product> {
+    if (qty <= 0) {
+      throw new Error('invalid_qty')
+    }
+    
+    const product = await this.reader.getById(id)
+    if (!product) {
+      throw new Error('not_found')
+    }
+    
+    if (product.stock < qty) {
+      throw new Error('insufficient_stock')
+    }
+    
+    const updated = { ...product, stock: product.stock - qty }
+    await this.writer.save(updated)
+    
+    return updated
   }
 }

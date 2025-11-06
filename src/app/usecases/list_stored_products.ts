@@ -6,6 +6,6 @@ export class ListStoredProducts {
   constructor(private reader: ProductReaderAll) {}
 
   async exec(): Promise<Product[]> {
-    throw new Error('TODO Etape 3: ListStoredProducts.exec')
+    return await this.reader.listAll()
   }
 }
