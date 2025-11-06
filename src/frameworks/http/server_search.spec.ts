@@ -25,7 +25,7 @@ function req(method: string, url: string): Promise<{ status: number, data: any }
 }
 
 // Exercice 7 — Implémenter la route /search
-describe.skip('Exercice 7 — HTTP search route', () => {
+describe('Exercice 7 — HTTP search route', () => {
   it('returns items using mocked controller', async () => {
     const portAvailable = await new Promise<boolean>(resolve => {
       const probeServer = net.createServer()
