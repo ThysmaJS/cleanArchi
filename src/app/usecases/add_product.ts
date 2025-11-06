@@ -7,7 +7,7 @@ export class AddProduct {
 
   async exec(p: Product): Promise<void> {
     // Validation: id et name non vides
-if (!p.id || !p.name) {
+    if (!p.id || !p.name) {
       throw new Error('invalid_product')
     }
     

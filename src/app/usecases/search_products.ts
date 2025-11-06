@@ -5,7 +5,7 @@ import { ProductLister } from '../../domain/ports/products/lister'
 export class SearchProducts {
   constructor(private lister: ProductLister) {}
 
-  async exec(_query: string, _limit?: number): Promise<Product[]> {
-    throw new Error('TODO Etape 4: SearchProducts.exec')
+  async exec(query: string, limit?: number): Promise<Product[]> {
+    return await this.lister.list(query, limit)
   }
 }
