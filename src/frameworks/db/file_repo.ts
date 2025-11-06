@@ -10,54 +10,59 @@ type StoreShape = Record<string, Product>
 // Étape 5 — À implémenter: persistance fichier (JSON) + rechargement
 // Voir src/frameworks/db/file_repo.spec.ts pour les attentes.
 export class FileRepo implements ProductReader, ProductWriter, ProductReaderAll {
-  // À implémenter — conseils:
-  // - Utilisez une Map<string, Product> en cache pour les lectures/écritures.
-  // - Chargez le cache à la première opération (lazy) via `load()`.
-  // - Persistez le JSON sur disque à chaque `save()` via `persist()`.
-  // - Forme du fichier JSON: un objet { [id]: Product } (cf. StoreShape).
-  // - Sérialisez avec JSON.stringify(obj, null, 2) pour lisibilité.
-  // - Si le fichier n'existe pas (ENOENT) → base vide.
-  // - Si le JSON est invalide → base vide (pas d'exception propagée).
-  // - Filtrez les entrées invalides lors du chargement (id/name/stock cohérents).
-  // private db: Map<string, Product> = new Map()
-  // private loaded = false
+  private db: Map<string, Product> = new Map()
+  private loaded = false
 
   constructor(private filePath: string) {}
 
   private async load() {
-    // Étapes suggérées:
-    // 1) si déjà chargé → return
-    // 2) lire le fichier (fs.readFile) en 'utf-8'
-    // 3) JSON.parse → StoreShape
-    // 4) pour chaque entrée valide → this.db.set(id, product)
-    // 5) en cas d'erreur (ENOENT, JSON invalide) → démarrer avec une Map vide
-    throw new Error('TODO Etape 5: FileRepo.load')
+    if (this.loaded) return
+    
+    try {
+      const data = await fs.readFile(this.filePath, 'utf-8')
+      const store: StoreShape = JSON.parse(data)
+      
+      for (const [id, product] of Object.entries(store)) {
+        // Filtrer les entrées valides
+        if (product && typeof product.id === 'string' && typeof product.name === 'string' && typeof product.stock === 'number' && product.id === id) {
+          this.db.set(id, product)
+        }
+      }
+    } catch (error: any) {
+      // Fichier inexistant ou JSON invalide → démarrer avec Map vide
+      this.db.clear()
+    }
+    
+    this.loaded = true
   }
 
   private async persist() {
-    // Étapes suggérées:
-    // 1) s'assurer que le dossier existe: fs.mkdir(path.dirname(filePath), { recursive: true })
-    // 2) construire un objet StoreShape à partir de this.db
-    // 3) écrire le JSON (indentation 2 espaces) avec fs.writeFile
-    throw new Error('TODO Etape 5: FileRepo.persist')
+    // S'assurer que le dossier existe
+    await fs.mkdir(path.dirname(this.filePath), { recursive: true })
+    
+    // Construire l'objet StoreShape
+    const store: StoreShape = {}
+    for (const [id, product] of this.db.entries()) {
+      store[id] = product
+    }
+    
+    // Écrire le JSON
+    await fs.writeFile(this.filePath, JSON.stringify(store, null, 2), 'utf-8')
   }
 
-  async getById(_id: string): Promise<Product | null> {
-    // 1) await this.load()
-    // 2) return this.db.get(id) ?? null
-    throw new Error('TODO Etape 5: FileRepo.getById')
+  async getById(id: string): Promise<Product | null> {
+    await this.load()
+    return this.db.get(id) ?? null
   }
 
-  async save(_product: Product): Promise<void> {
-    // 1) await this.load()
-    // 2) this.db.set(product.id, product)
-    // 3) await this.persist()
-    throw new Error('TODO Etape 5: FileRepo.save')
+  async save(product: Product): Promise<void> {
+    await this.load()
+    this.db.set(product.id, product)
+    await this.persist()
   }
 
   async listAll(): Promise<Product[]> {
-    // 1) await this.load()
-    // 2) return Array.from(this.db.values())
-    throw new Error('TODO Etape 5: FileRepo.listAll')
+    await this.load()
+    return Array.from(this.db.values())
   }
 }
