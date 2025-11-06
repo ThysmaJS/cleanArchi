@@ -7,17 +7,17 @@ import { ProductReaderAll } from '../../domain/ports/products/list_all'
 // Objectif: déposer en mémoire (Map) pour lire/écrire/lister des produits.
 // Voir les attentes dans: src/adapters/gateways/memory_products.spec.ts
 export class MemoryProductsGateway implements ProductReader, ProductWriter, ProductReaderAll {
-  // Suggestion: utilisez une Map<string, Product>
+  private products = new Map<string, Product>()
 
-  getById(_id: string): Product | null {
-    throw new Error('TODO Etape 1: MemoryProductsGateway.getById')
+  getById(id: string): Product | null {
+    return this.products.get(id) || null
   }
 
-  save(_product: Product): void {
-    throw new Error('TODO Etape 1: MemoryProductsGateway.save')
+  save(product: Product): void {
+    this.products.set(product.id, product)
   }
 
   listAll(): Product[] {
-    throw new Error('TODO Etape 1: MemoryProductsGateway.listAll')
+    return Array.from(this.products.values())
   }
 }
