@@ -6,7 +6,7 @@ import { OpenFoodFactsLister } from 'src/adapters/gateways/openfoodfacts_lister'
 // Mapping attendu (→ Product): id=code/_id, name=product_name/generic_name/brands, stock=0
 // En test, fetch est mocké → pas de réseau nécessaire
 // Pour activer cette étape: remplacez describe.skip par describe.
-describe.skip('Étape 6 — OpenFoodFactsLister', () => {
+describe('Étape 6 — OpenFoodFactsLister', () => {
   const realFetch = (global as any).fetch
 
   afterEach(() => {
